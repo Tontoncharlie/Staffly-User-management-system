@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Staffly{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="text-lg font-semibold text-gray-900">{{ title }}</h3>
+            <p class="text-sm text-gray-500 mt-1">
+                {% if user_obj %}
+                Update user information and permissions
+                {% else %}
+                Add a new user to the system
+                {% endif %}
+            </p>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                    {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Account Information -->
+                <div>
+                    <h4 class="text-md font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100">
+                        Account Information
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                            <label for="id_email" class="block text-sm font-medium text-gray-700 mb-2">
+                                Email Address <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        {% if form.password1 %}
+                        <div>
+                            <label for="id_password1" class="block text-sm font-medium text-gray-700 mb-2">
+                                Password <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.password1 }}
+                            {% if form.password1.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.password1.errors.0 }}</p>
+                            {% endif %}
+                            <p class="mt-1 text-xs text-gray-500">Must be at least 8 characters</p>
+                        </div>
+
+                        <div>
+                            <label for="id_password2" class="block text-sm font-medium text-gray-700 mb-2">
+                                Confirm Password <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.password2 }}
+                            {% if form.password2.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.password2.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Personal Information -->
+                <div>
+                    <h4 class="text-md font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100">
+                        Personal Information
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="id_first_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                First Name
+                            </label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.first_name.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="id_last_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                Last Name
+                            </label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.last_name.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        {% if form.phone %}
+                        <div>
+                            <label for="id_phone" class="block text-sm font-medium text-gray-700 mb-2">
+                                Phone Number
+                            </label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.phone.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Work Information -->
+                <div>
+                    <h4 class="text-md font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100">
+                        Work Information
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="id_department" class="block text-sm font-medium text-gray-700 mb-2">
+                                Department
+                            </label>
+                            {{ form.department }}
+                            {% if form.department.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.department.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="id_job_title" class="block text-sm font-medium text-gray-700 mb-2">
+                                Job Title
+                            </label>
+                            {{ form.job_title }}
+                            {% if form.job_title.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.job_title.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Role & Permissions -->
+                <div>
+                    <h4 class="text-md font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100">
+                        Role & Permissions
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="id_role" class="block text-sm font-medium text-gray-700 mb-2">
+                                User Role <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.role }}
+                            {% if form.role.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.role.errors.0 }}</p>
+                            {% endif %}
+                            <p class="mt-1 text-xs text-gray-500">Determines user access level</p>
+                        </div>
+
+                        <div class="flex items-end">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                {{ form.is_active }}
+                                <span class="text-sm font-medium text-gray-700">Active Account</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Picture (if editing) -->
+                {% if form.profile_picture %}
+                <div>
+                    <h4 class="text-md font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100">
+                        Profile Picture
+                    </h4>
+                    {% if user_obj and user_obj.profile_picture %}
+                    <div class="flex items-center gap-4 mb-4">
+                        <img src="{{ user_obj.profile_picture.url }}" alt="{{ user_obj.get_short_name }}"
+                            class="w-16 h-16 rounded-full object-cover">
+                        <p class="text-sm text-gray-500">Current profile picture</p>
+                    </div>
+                    {% endif %}
+                    {{ form.profile_picture }}
+                </div>
+                {% endif %}
+
+                <!-- Bio -->
+                {% if form.bio %}
+                <div>
+                    <label for="id_bio" class="block text-sm font-medium text-gray-700 mb-2">
+                        Bio
+                    </label>
+                    {{ form.bio }}
+                    {% if form.bio.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.bio.errors.0 }}</p>
+                    {% endif %}
+                    <p class="mt-1 text-xs text-gray-500">Brief description about the user (max 500 characters)</p>
+                </div>
+                {% endif %}
+
+                <!-- Actions -->
+                <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-100">
+                    <a href="{% url 'accounts:user_list' %}" class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+                        Cancel
+                    </a>
+                    <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all duration-200 shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40">
+                        {{ submit_text }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

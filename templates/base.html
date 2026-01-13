@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Staffly - User & Staff Management System">
+    <title>{% block title %}Staffly{% endblock %}</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <style>
+        /* Form input styles */
+        .form-input {
+            @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .form-select {
+            @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white;
+        }
+
+        .form-textarea {
+            @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none;
+        }
+
+        .form-checkbox {
+            @apply w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500;
+        }
+
+        .form-file {
+            @apply w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100;
+        }
+
+        /* Button styles */
+        .btn {
+            @apply px-4 py-2.5 rounded-lg font-medium transition-all duration-200 inline-flex items-center justify-center gap-2;
+        }
+
+        .btn-primary {
+            @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-4 focus:ring-primary-200;
+        }
+
+        .btn-secondary {
+            @apply bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-4 focus:ring-gray-100;
+        }
+
+        .btn-danger {
+            @apply bg-red-600 text-white hover:bg-red-700 focus:ring-4 focus:ring-red-200;
+        }
+
+        .btn-success {
+            @apply bg-green-600 text-white hover:bg-green-700 focus:ring-4 focus:ring-green-200;
+        }
+
+        /* Premium Sidebar Styles */
+        .sidebar-premium {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .sidebar-link {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #4b5563;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .sidebar-link svg {
+            flex-shrink: 0;
+            width: 1.25rem;
+            height: 1.25rem;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: linear-gradient(180deg, #0ea5e9 0%, #0284c7 100%);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .sidebar-link:hover {
+            background: linear-gradient(90deg, rgba(14, 165, 233, 0.08) 0%, rgba(14, 165, 233, 0.02) 100%);
+            color: #0284c7;
+            transform: translateX(4px);
+        }
+
+        .sidebar-link:hover svg {
+            transform: scale(1.1);
+        }
+
+        .sidebar-link.active {
+            background: linear-gradient(90deg, rgba(14, 165, 233, 0.12) 0%, rgba(14, 165, 233, 0.04) 100%);
+            color: #0369a1;
+            font-weight: 600;
+        }
+
+        .sidebar-link.active::before {
+            transform: scaleY(1);
+        }
+
+        /* Card styles */
+        .card {
+            @apply bg-white rounded-xl shadow-sm border border-gray-100;
+        }
+
+        .card-header {
+            @apply px-6 py-4 border-b border-gray-100;
+        }
+
+        .card-body {
+            @apply p-6;
+        }
+
+        /* Glass Card for Login */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(14, 165, 233, 0.05);
+        }
+
+        /* Status badges */
+        .badge {
+            @apply px-2.5 py-1 rounded-full text-xs font-medium;
+        }
+
+        .badge-admin {
+            @apply bg-red-100 text-red-700;
+        }
+
+        .badge-staff {
+            @apply bg-blue-100 text-blue-700;
+        }
+
+        .badge-user {
+            @apply bg-green-100 text-green-700;
+        }
+
+        .badge-active {
+            @apply bg-green-100 text-green-700;
+        }
+
+        .badge-inactive {
+            @apply bg-gray-100 text-gray-700;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Gradient shimmer for buttons */
+        @keyframes shimmer {
+            0% {
+                background-position: -200% center;
+            }
+
+            100% {
+                background-position: 200% center;
+            }
+        }
+
+        .btn-shimmer {
+            background: linear-gradient(90deg, #0ea5e9 0%, #38bdf8 25%, #0ea5e9 50%, #38bdf8 75%, #0ea5e9 100%);
+            background-size: 200% auto;
+            transition: all 0.3s ease;
+        }
+
+        .btn-shimmer:hover {
+            animation: shimmer 2s linear infinite;
+            box-shadow: 0 10px 40px -10px rgba(14, 165, 233, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Logo glow animation */
+        @keyframes logoGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(14, 165, 233, 0.5);
+            }
+        }
+
+        .logo-glow {
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+
+        /* Profile ring animation */
+        @keyframes profileRing {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.3);
+            }
+        }
+
+        .profile-ring {
+            animation: profileRing 2s ease-in-out infinite;
+        }
+
+        /* Login background pattern */
+        .login-bg-pattern {
+            background-color: #f8fafc;
+            background-image:
+                radial-gradient(at 40% 20%, rgba(14, 165, 233, 0.08) 0px, transparent 50%),
+                radial-gradient(at 80% 0%, rgba(56, 189, 248, 0.06) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, rgba(14, 165, 233, 0.05) 0px, transparent 50%),
+                radial-gradient(at 80% 50%, rgba(2, 132, 199, 0.04) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(14, 165, 233, 0.06) 0px, transparent 50%);
+        }
+
+        /* Input icon styling */
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon .input-icon-left {
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            pointer-events: none;
+            transition: color 0.2s ease;
+        }
+
+        .input-with-icon input:focus~.input-icon-left {
+            color: #0ea5e9;
+        }
+
+        .input-with-icon .input-icon-right {
+            position: absolute;
+            right: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .input-with-icon .input-icon-right:hover {
+            color: #6b7280;
+        }
+
+        /* Section divider gradient */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(14, 165, 233, 0.2) 50%, transparent 100%);
+        }
+
+        /* Premium logout button */
+        .logout-btn {
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+            transform: translateX(4px);
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="h-full bg-gray-50">
+    {% if user.is_authenticated %}
+    <!-- Authenticated Layout with Sidebar -->
+    <div class="flex h-full">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 sidebar-premium border-r border-gray-200/50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-xl shadow-gray-200/50">
+            <!-- Logo -->
+            <div class="flex-shrink-0 flex items-center gap-3 px-6 py-5 border-b border-gray-100/50">
+                <div
+                    class="w-11 h-11 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center logo-glow">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                        </path>
+                    </svg>
+                </div>
+                <div>
+                    <h1
+                        class="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                        Staffly</h1>
+                    <p class="text-xs text-gray-500">Management System</p>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto min-h-0">
+                <!-- Dashboard -->
+                <a href="{% url 'dashboard:router' %}"
+                    class="sidebar-link {% if request.resolver_match.url_name in 'router admin staff user' %}active{% endif %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
+                    </svg>
+                    Dashboard
+                </a>
+
+                {% if is_admin %}
+                <!-- User Management (Admin Only) -->
+                <div class="pt-4 pb-2">
+                    <div class="section-divider mx-4 mb-3"></div>
+                    <p class="px-4 text-xs font-semibold text-primary-600/70 uppercase tracking-wider">Administration
+                    </p>
+                </div>
+                <a href="{% url 'accounts:user_list' %}"
+                    class="sidebar-link {% if 'user_list' in request.resolver_match.url_name %}active{% endif %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                        </path>
+                    </svg>
+                    Users
+                </a>
+                <a href="{% url 'accounts:user_create' %}"
+                    class="sidebar-link {% if 'user_create' in request.resolver_match.url_name %}active{% endif %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z">
+                        </path>
+                    </svg>
+                    Add User
+                </a>
+                {% endif %}
+
+                <!-- Profile Section -->
+                <div class="pt-4 pb-2">
+                    <div class="section-divider mx-4 mb-3"></div>
+                    <p class="px-4 text-xs font-semibold text-primary-600/70 uppercase tracking-wider">Account</p>
+                </div>
+                <a href="{% url 'accounts:profile' %}"
+                    class="sidebar-link {% if 'profile' in request.resolver_match.url_name %}active{% endif %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    My Profile
+                </a>
+                <a href="{% url 'accounts:password_change' %}"
+                    class="sidebar-link {% if 'password_change' in request.resolver_match.url_name %}active{% endif %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                        </path>
+                    </svg>
+                    Change Password
+                </a>
+            </nav>
+
+            <!-- User Info & Logout -->
+            <div class="flex-shrink-0 p-4 border-t border-gray-100/50 bg-gradient-to-t from-gray-50/50 to-transparent">
+                <div class="flex items-center gap-3 mb-3 p-3 rounded-xl bg-white/60 border border-gray-100/50">
+                    {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="{{ user.get_short_name }}"
+                        class="w-10 h-10 rounded-full object-cover ring-2 ring-primary-200 profile-ring">
+                    {% else %}
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center ring-2 ring-primary-200 profile-ring">
+                        <span class="text-primary-700 font-semibold text-sm">{{ user.get_initials }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-gray-900 truncate">{{ user.get_short_name }}</p>
+                        <p class="text-xs text-gray-500 truncate">{{ user.email }}</p>
+                    </div>
+                </div>
+                <a href="{% url 'accounts:logout' %}"
+                    class="logout-btn flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-600 hover:text-red-700 rounded-xl font-medium">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                        </path>
+                    </svg>
+                    Sign Out
+                </a>
+            </div>
+        </aside>
+
+        <!-- Overlay for mobile -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-40 hidden lg:hidden"
+            onclick="toggleSidebar()"></div>
+
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-64">
+            <!-- Top Header -->
+            <header class="sticky top-0 z-30 bg-white border-b border-gray-200">
+                <div class="flex items-center justify-between px-4 py-3 lg:px-8">
+                    <!-- Mobile menu button -->
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Page Title -->
+                    <h2 class="text-lg font-semibold text-gray-900 lg:text-xl">{% block page_title %}Dashboard{% endblock %}</h2>
+
+                    <!-- Right side -->
+                    <div class="flex items-center gap-4">
+                        <!-- Role Badge -->
+                        <span
+                            class="hidden sm:inline-flex badge {% if user.role == 'ADMIN' %}badge-admin{% elif user.role == 'STAFF' %}badge-staff{% else %}badge-user{% endif %}">
+                            {{ user.get_role_display }}
+                        </span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Messages -->
+            {% if messages %}
+            <div class="px-4 py-3 lg:px-8 space-y-2">
+                {% for message in messages %}
+                <div
+                    class="animate-fade-in p-4 rounded-lg flex items-center gap-3 {% if message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200{% elif message.tags == 'success' %}bg-green-50 text-green-700 border border-green-200{% elif message.tags == 'warning' %}bg-yellow-50 text-yellow-700 border border-yellow-200{% else %}bg-blue-50 text-blue-700 border border-blue-200{% endif %}">
+                    {% if message.tags == 'error' %}
+                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    {% elif message.tags == 'success' %}
+                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    {% else %}
+                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    {% endif %}
+                    <p class="text-sm">{{ message }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Content -->
+            <main class="p-4 lg:p-8">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    {% else %}
+    <!-- Unauthenticated Layout -->
+    <div class="min-h-screen flex">
+        <!-- Left side - Branding -->
+        <div
+            class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600 to-primary-800 p-12 flex-col justify-between">
+            <div>
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h1 class="text-2xl font-bold text-white">Staffly</h1>
+                </div>
+                <p class="mt-4 text-primary-100 text-lg">User & Staff Management System</p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-white">Secure Access Control</h3>
+                        <p class="text-primary-200 text-sm">Role-based permissions ensure data security</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-white">Real-time Analytics</h3>
+                        <p class="text-primary-200 text-sm">Monitor user activity and system metrics</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-white">Team Management</h3>
+                        <p class="text-primary-200 text-sm">Organize and manage your entire team</p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-primary-300 text-sm">&copy; 2024 Staffly. All rights reserved.</p>
+        </div>
+
+        <!-- Right side - Content -->
+        <div class="flex-1 flex items-center justify-center p-8 login-bg-pattern">
+            <div class="w-full max-w-md">
+                {% if messages %}
+                <div class="mb-6 space-y-2">
+                    {% for message in messages %}
+                    <div
+                        class="animate-fade-in p-4 rounded-xl flex items-center gap-3 backdrop-blur-sm {% if message.tags == 'error' %}bg-red-50/80 text-red-700 border border-red-200{% elif message.tags == 'success' %}bg-green-50/80 text-green-700 border border-green-200{% else %}bg-blue-50/80 text-blue-700 border border-blue-200{% endif %}">
+                        <p class="text-sm">{{ message }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% block auth_content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- JavaScript -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function (event) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            if (!sidebar.contains(event.target) && !event.target.closest('[onclick="toggleSidebar()"]')) {
+                if (window.innerWidth < 1024 && !sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.add('-translate-x-full');
+                    overlay.classList.add('hidden');
+                }
+            }
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

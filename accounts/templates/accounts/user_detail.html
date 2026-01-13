@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user_obj.get_full_name }} - Staffly{% endblock %}
+{% block page_title %}User Details{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="card">
+        <div class="card-body">
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row md:items-start gap-6 pb-6 border-b border-gray-100">
+                {% if user_obj.profile_picture %}
+                <img src="{{ user_obj.profile_picture.url }}" alt="{{ user_obj.get_short_name }}"
+                    class="w-24 h-24 rounded-2xl object-cover shadow-sm">
+                {% else %}
+                <div
+                    class="w-24 h-24 bg-gradient-to-br from-primary-400 to-primary-600 rounded-2xl flex items-center justify-center shadow-sm">
+                    <span class="text-white font-bold text-2xl">{{ user_obj.get_initials }}</span>
+                </div>
+                {% endif %}
+
+                <div class="flex-1">
+                    <div class="flex flex-col md:flex-row md:items-center gap-3 mb-2">
+                        <h2 class="text-2xl font-bold text-gray-900">{{ user_obj.get_full_name }}</h2>
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="badge {% if user_obj.role == 'ADMIN' %}badge-admin{% elif user_obj.role == 'STAFF' %}badge-staff{% else %}badge-user{% endif %}">
+                                {{ user_obj.get_role_display }}
+                            </span>
+                            <span
+                                class="badge {% if user_obj.is_active %}badge-active{% else %}badge-inactive{% endif %}">
+                                {% if user_obj.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <p class="text-gray-500">{{ user_obj.email }}</p>
+                    {% if user_obj.job_title or user_obj.department %}
+                    <p class="text-gray-600 mt-1">
+                        {% if user_obj.job_title %}{{ user_obj.job_title }}{% endif %}
+                        {% if user_obj.job_title and user_obj.department %} · {% endif %}
+                        {% if user_obj.department %}{{ user_obj.department }}{% endif %}
+                    </p>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <a href="{% url 'accounts:user_update' user_obj.pk %}" class="btn btn-primary">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                            </path>
+                        </svg>
+                        Edit
+                    </a>
+                    <a href="{% url 'accounts:user_list' %}" class="btn btn-secondary">
+                        Back
+                    </a>
+                </div>
+            </div>
+
+            <!-- Details Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
+                <!-- Contact Information -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Contact Information
+                    </h3>
+                    <dl class="space-y-3">
+                        <div>
+                            <dt class="text-sm text-gray-500">Email</dt>
+                            <dd class="text-gray-900">{{ user_obj.email }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-gray-500">Phone</dt>
+                            <dd class="text-gray-900">{{ user_obj.phone|default:"Not provided" }}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- Work Information -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Work Information</h3>
+                    <dl class="space-y-3">
+                        <div>
+                            <dt class="text-sm text-gray-500">Department</dt>
+                            <dd class="text-gray-900">{{ user_obj.department|default:"Not assigned" }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-gray-500">Job Title</dt>
+                            <dd class="text-gray-900">{{ user_obj.job_title|default:"Not specified" }}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- Account Information -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Account Information
+                    </h3>
+                    <dl class="space-y-3">
+                        <div>
+                            <dt class="text-sm text-gray-500">Role</dt>
+                            <dd class="text-gray-900">{{ user_obj.get_role_display }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-gray-500">Status</dt>
+                            <dd class="text-gray-900">{% if user_obj.is_active %}Active{% else %}Inactive{% endif %}
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- Dates -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Activity</h3>
+                    <dl class="space-y-3">
+                        <div>
+                            <dt class="text-sm text-gray-500">Date Joined</dt>
+                            <dd class="text-gray-900">{{ user_obj.date_joined|date:"F d, Y \a\t g:i A" }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm text-gray-500">Last Login</dt>
+                            <dd class="text-gray-900">
+                                {% if user_obj.last_login %}
+                                {{ user_obj.last_login|date:"F d, Y \a\t g:i A" }}
+                                {% else %}
+                                Never
+                                {% endif %}
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            {% if user_obj.bio %}
+            <!-- Bio -->
+            <div class="py-6 border-t border-gray-100">
+                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">About</h3>
+                <p class="text-gray-700">{{ user_obj.bio }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Quick Actions -->
+            {% if user_obj != request.user %}
+            <div class="pt-6 border-t border-gray-100">
+                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Quick Actions</h3>
+                <div class="flex flex-wrap gap-3">
+                    <form method="post" action="{% url 'accounts:user_toggle_status' user_obj.pk %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                            class="btn {% if user_obj.is_active %}btn-secondary{% else %}btn-success{% endif %}">
+                            {% if user_obj.is_active %}
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636">
+                                </path>
+                            </svg>
+                            Deactivate Account
+                            {% else %}
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Activate Account
+                            {% endif %}
+                        </button>
+                    </form>
+
+                    <form method="post" action="{% url 'accounts:user_delete' user_obj.pk %}"
+                        onsubmit="return confirm('Are you sure you want to permanently delete this user? This action cannot be undone.');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                </path>
+                            </svg>
+                            Delete User
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
