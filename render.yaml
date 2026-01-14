@@ -1,8 +1,5 @@
-databases:
-  - name: staffly-db
-    databaseName: staffly
-    user: staffly_user
-    plan: free
+# Render Blueprint - Web Service Only
+# Use an existing PostgreSQL database by setting DATABASE_URL manually
 
 services:
   - type: web
@@ -13,15 +10,13 @@ services:
     startCommand: "gunicorn staffly.wsgi:application"
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: staffly-db
-          property: connectionString
+        sync: false  # Set this manually to your existing database URL
       - key: SECRET_KEY
         generateValue: true
       - key: DJANGO_ENV
         value: production
       - key: ALLOWED_HOSTS
-        sync: false
+        sync: false  # Set to: staffly.onrender.com
       - key: SECURE_SSL_REDIRECT
         value: "True"
       - key: PYTHON_VERSION
