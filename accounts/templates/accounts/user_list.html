@@ -56,25 +56,41 @@
     </div>
 
     <!-- Filters and Search -->
-    <div class="card">
+    <div class="card overflow-hidden">
+        <div class="card-header bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+                        </path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900">Search & Filter</h3>
+                    <p class="text-sm text-gray-500">Find users quickly</p>
+                </div>
+            </div>
+        </div>
         <div class="card-body">
             <form method="get" class="flex flex-col lg:flex-row gap-4">
                 <!-- Search -->
                 <div class="flex-1">
                     <div class="relative">
-                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
+                        <svg class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                        <input type="text" name="search" value="{{ search }}" class="form-input pl-10"
+                        <input type="text" name="search" value="{{ search }}" 
+                            class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
                             placeholder="Search by name, email, or department...">
                     </div>
                 </div>
 
                 <!-- Role Filter -->
-                <div class="w-full lg:w-40">
-                    <select name="role" class="form-select">
+                <div class="w-full lg:w-44">
+                    <select name="role" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white transition-all duration-200">
                         <option value="">All Roles</option>
                         {% for value, label in roles %}
                         <option value="{{ value }}" {% if role == value %}selected{% endif %}>{{ label }}</option>
@@ -83,15 +99,17 @@
                 </div>
 
                 <!-- Status Filter -->
-                <div class="w-full lg:w-40">
-                    <select name="status" class="form-select">
+                <div class="w-full lg:w-44">
+                    <select name="status" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white transition-all duration-200">
                         <option value="">All Status</option>
                         <option value="active" {% if status == 'active' %}selected{% endif %}>Active</option>
                         <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Inactive</option>
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary">
+                <!-- Filter Button -->
+                <button type="submit" 
+                    class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-700 rounded-xl hover:from-primary-600 hover:to-primary-800 transition-all duration-200 shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 hover:-translate-y-0.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
@@ -100,7 +118,9 @@
                     Filter
                 </button>
 
-                <a href="{% url 'accounts:user_create' %}" class="btn btn-success">
+                <!-- Add User Button -->
+                <a href="{% url 'accounts:user_create' %}" 
+                   class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-green-500 to-green-700 rounded-xl hover:from-green-600 hover:to-green-800 transition-all duration-200 shadow-lg shadow-green-500/25 hover:shadow-green-500/40 hover:-translate-y-0.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
